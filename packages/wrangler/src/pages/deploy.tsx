@@ -1,7 +1,6 @@
 import { execSync } from "node:child_process";
 import { render, Text } from "ink";
 import SelectInput from "ink-select-input";
-import React from "react";
 import { deploy } from "../api/pages/deploy";
 import { fetchResult } from "../cfetch";
 import { findWranglerToml, readConfig } from "../config";
@@ -80,6 +79,12 @@ export function Options(yargs: CommonYargsArgv) {
 				describe: "Pages does not support wrangler.toml",
 				type: "string",
 				hidden: true,
+			},
+			"upload-source-maps": {
+				type: "boolean",
+				default: false,
+				description:
+					"Whether to upload any server-side sourcemaps with this deployment",
 			},
 		});
 }
@@ -221,7 +226,7 @@ export const Handler = async (args: PagesDeployArgs) => {
 		 * to create that project for them
 		 */
 		if (projectName !== undefined && !isExistingProject) {
-			const message = `The project you specified does not exist: "${projectName}". Would you like to create it?"`;
+			const message = `The project you specified does not exist: "${projectName}". Would you like to create it?`;
 			const items: NewOrExistingItem[] = [
 				{
 					key: "new",
@@ -348,6 +353,8 @@ export const Handler = async (args: PagesDeployArgs) => {
 		// TODO: Here lies a known bug. If you specify both `--bundle` and `--no-bundle`, this behavior is undefined and you will get unexpected results.
 		// There is no sane way to get the true value out of yargs, so here we are.
 		bundle: args.bundle ?? !args.noBundle,
+		// Sourcemaps from deploy arguments will take precedence so people can try it for one-off deployments without updating their wrangler.toml
+		sourceMaps: config?.upload_source_maps || args.uploadSourceMaps,
 		args,
 	});
 

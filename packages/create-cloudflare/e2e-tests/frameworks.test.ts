@@ -71,6 +71,7 @@ const { name: pm, npx } = detectPackageManager();
 const frameworkTests: Record<string, FrameworkTestConfig> = {
 	astro: {
 		testCommitMessage: true,
+		quarantine: true,
 		unsupportedOSs: ["win32"],
 		verifyDeploy: {
 			route: "/",
@@ -455,6 +456,7 @@ describe.concurrent(`E2E: Web frameworks`, () => {
 					await verifyBuildScript(framework, projectPath, logStream);
 					await storeDiff(framework, projectPath);
 				} catch (e) {
+					console.error("ERROR", e);
 					expect.fail(
 						"Failed due to an exception while running C3. See logs for more details",
 					);

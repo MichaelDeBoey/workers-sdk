@@ -60,23 +60,20 @@ export async function fetchLatestDeployment(
 	return deployments.at(0);
 }
 
-export async function fetchLatestDeploymentVersions(
+export async function fetchDeploymentVersions(
 	accountId: string,
 	workerName: string,
+	deployment: ApiDeployment | undefined,
 	versionCache: VersionCache
 ): Promise<[ApiVersion[], Map<VersionId, Percentage>]> {
-	const latestDeployment = await fetchLatestDeployment(accountId, workerName);
-
-	if (!latestDeployment) {
+	if (!deployment) {
 		return [[], new Map()];
 	}
 
 	const versionTraffic = new Map(
-		latestDeployment.versions.map(({ version_id: versionId, percentage }) => [
-			versionId,
-			percentage,
-		])
+		deployment.versions.map((v) => [v.version_id, v.percentage])
 	);
+
 	const versions = await fetchVersions(
 		accountId,
 		workerName,
@@ -87,13 +84,13 @@ export async function fetchLatestDeploymentVersions(
 	return [versions, versionTraffic];
 }
 
-export async function fetchLatestUploadedVersions(
+export async function fetchDeployableVersions(
 	accountId: string,
 	workerName: string,
 	versionCache: VersionCache
 ): Promise<ApiVersion[]> {
 	const { items: versions } = await fetchResult<{ items: ApiVersion[] }>(
-		`/accounts/${accountId}/workers/scripts/${workerName}/versions`
+		`/accounts/${accountId}/workers/scripts/${workerName}/versions?deployable=true`
 	);
 
 	for (const version of versions) {
@@ -107,10 +104,11 @@ export async function createDeployment(
 	accountId: string,
 	workerName: string,
 	versionTraffic: Map<VersionId, Percentage>,
-	message: string | undefined
+	message: string | undefined,
+	force?: boolean
 ) {
-	const res = await fetchResult(
-		`/accounts/${accountId}/workers/scripts/${workerName}/deployments`,
+	return await fetchResult(
+		`/accounts/${accountId}/workers/scripts/${workerName}/deployments${force ? "?force=true" : ""}`,
 		{
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -125,10 +123,6 @@ export async function createDeployment(
 			}),
 		}
 	);
-
-	// TODO: handle specific errors
-
-	return res;
 }
 
 type NonVersionedScriptSettings = {

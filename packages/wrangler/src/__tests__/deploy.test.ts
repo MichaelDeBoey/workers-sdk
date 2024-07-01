@@ -43,6 +43,7 @@ import {
 	mswSuccessOauthHandlers,
 	mswSuccessUserHandlers,
 } from "./helpers/msw";
+import { mswListNewDeploymentsLatestFull } from "./helpers/msw/handlers/versions";
 import { runInTempDir } from "./helpers/run-in-tmp";
 import { runWrangler } from "./helpers/run-wrangler";
 import { writeWorkerSource } from "./helpers/write-worker-source";
@@ -78,6 +79,7 @@ describe("deploy", () => {
 		setIsTTY(true);
 		mockLastDeploymentRequest();
 		mockDeploymentsListRequest();
+		msw.use(...mswListNewDeploymentsLatestFull);
 		logger.loggerLevel = "log";
 	});
 
@@ -2601,7 +2603,18 @@ addEventListener('fetch', event => {});`
 				find_additional_modules: true,
 				rules: [{ type: "ESModule", globs: ["**/*.mjs"] }],
 			});
-			writeWorkerSource({ type: "esm" });
+			// Create a Worker that imports a CommonJS module to trigger esbuild to add
+			// extra boilerplate to convert to ESM imports.
+			fs.writeFileSync(`another.cjs`, `module.exports.foo = 100;`);
+			fs.writeFileSync(
+				`index.js`,
+				`import { foo } from "./another.cjs";
+					export default {
+						async fetch(request) {
+							return new Response('Hello' + foo);
+						},
+					};`
+			);
 			fs.mkdirSync("a/b/c", { recursive: true });
 			fs.writeFileSync(
 				"a/1.mjs",
@@ -2621,6 +2634,11 @@ addEventListener('fetch', event => {});`
 			);
 			writeAssets(assets);
 			mockUploadWorkerRequest({
+				expectedEntry(entry) {
+					// Ensure that we have not included the watch stub in production code.
+					// This is only needed in `wrangler dev`.
+					expect(entry).not.toMatch(/modules-watch-stub\.js/);
+				},
 				expectedBindings: [
 					{
 						name: "__STATIC_CONTENT",
@@ -8514,17 +8532,17 @@ export default{
 			writeWorkerSource();
 			await runWrangler("deploy index.js --node-compat --dry-run");
 			expect(std).toMatchInlineSnapshot(`
-			Object {
-			  "debug": "",
-			  "err": "",
-			  "info": "",
-			  "out": "Total Upload: xx KiB / gzip: xx KiB
-			--dry-run: exiting now.",
-			  "warn": "[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mEnabling Node.js compatibility mode for built-ins and globals. This is experimental and has serious tradeoffs. Please see https://github.com/ionic-team/rollup-plugin-node-polyfills/ for more details.[0m
+				Object {
+				  "debug": "",
+				  "err": "",
+				  "info": "",
+				  "out": "Total Upload: xx KiB / gzip: xx KiB
+				--dry-run: exiting now.",
+				  "warn": "[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mEnabling Wrangler compile-time Node.js compatibility polyfill mode for builtins and globals. This is experimental and has serious tradeoffs.[0m
 
-			",
-			}
-		`);
+				",
+				}
+			`);
 		});
 
 		it("should recommend node compatibility mode when using node builtins and node-compat isn't enabled", async () => {
@@ -8562,17 +8580,17 @@ export default{
 			);
 			await runWrangler("deploy index.js --node-compat --dry-run"); // this would throw if node compatibility didn't exist
 			expect(std).toMatchInlineSnapshot(`
-			Object {
-			  "debug": "",
-			  "err": "",
-			  "info": "",
-			  "out": "Total Upload: xx KiB / gzip: xx KiB
-			--dry-run: exiting now.",
-			  "warn": "[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mEnabling Node.js compatibility mode for built-ins and globals. This is experimental and has serious tradeoffs. Please see https://github.com/ionic-team/rollup-plugin-node-polyfills/ for more details.[0m
+				Object {
+				  "debug": "",
+				  "err": "",
+				  "info": "",
+				  "out": "Total Upload: xx KiB / gzip: xx KiB
+				--dry-run: exiting now.",
+				  "warn": "[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mEnabling Wrangler compile-time Node.js compatibility polyfill mode for builtins and globals. This is experimental and has serious tradeoffs.[0m
 
-			",
-			}
-		`);
+				",
+				}
+			`);
 		});
 	});
 
@@ -8647,7 +8665,7 @@ export default{
 					"deploy index.js --dry-run --outdir=dist --compatibility-flag=nodejs_compat --node-compat"
 				)
 			).rejects.toThrowErrorMatchingInlineSnapshot(
-				`[AssertionError: The \`nodejs_compat\` compatibility flag cannot be used in conjunction with the legacy \`--node-compat\` flag. If you want to use the Workers runtime Node.js compatibility features, please remove the \`--node-compat\` argument from your CLI command or \`node_compat = true\` from your config file.]`
+				`[Error: The \`nodejs_compat\` compatibility flag cannot be used in conjunction with the legacy \`--node-compat\` flag. If you want to use the Workers \`nodejs_compat\` compatibility flag, please remove the \`--node-compat\` argument from your CLI command or \`node_compat = true\` from your config file.]`
 			);
 		});
 	});
@@ -9082,13 +9100,13 @@ export default{
 				"deploy index.js --no-bundle --node-compat --dry-run --outdir dist"
 			);
 			expect(std.warn).toMatchInlineSnapshot(`
-			"[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mEnabling Node.js compatibility mode for built-ins and globals. This is experimental and has serious tradeoffs. Please see https://github.com/ionic-team/rollup-plugin-node-polyfills/ for more details.[0m
+				"[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mEnabling Wrangler compile-time Node.js compatibility polyfill mode for builtins and globals. This is experimental and has serious tradeoffs.[0m
 
 
-			[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m\`--node-compat\` and \`--no-bundle\` can't be used together. If you want to polyfill Node.js built-ins and disable Wrangler's bundling, please polyfill as part of your own bundling process.[0m
+				[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m\`--node-compat\` and \`--no-bundle\` can't be used together. If you want to polyfill Node.js built-ins and disable Wrangler's bundling, please polyfill as part of your own bundling process.[0m
 
-			"
-		`);
+				"
+			`);
 		});
 
 		it("should warn that no-bundle and node-compat can't be used together", async () => {
@@ -9102,13 +9120,13 @@ export default{
 			fs.writeFileSync("index.js", scriptContent);
 			await runWrangler("deploy index.js --dry-run --outdir dist");
 			expect(std.warn).toMatchInlineSnapshot(`
-			"[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mEnabling Node.js compatibility mode for built-ins and globals. This is experimental and has serious tradeoffs. Please see https://github.com/ionic-team/rollup-plugin-node-polyfills/ for more details.[0m
+				"[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mEnabling Wrangler compile-time Node.js compatibility polyfill mode for builtins and globals. This is experimental and has serious tradeoffs.[0m
 
 
-			[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m\`--node-compat\` and \`--no-bundle\` can't be used together. If you want to polyfill Node.js built-ins and disable Wrangler's bundling, please polyfill as part of your own bundling process.[0m
+				[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m\`--node-compat\` and \`--no-bundle\` can't be used together. If you want to polyfill Node.js built-ins and disable Wrangler's bundling, please polyfill as part of your own bundling process.[0m
 
-			"
-		`);
+				"
+			`);
 		});
 	});
 

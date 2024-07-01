@@ -17,7 +17,7 @@ async function getBotMessage(ai: Ai, prompt: string) {
 				role: "user",
 				content: prompt,
 			},
-		],
+		] as RoleScopedChatInput[],
 	};
 	const message = await ai.run("@cf/meta/llama-2-7b-chat-int8", chat);
 	if (!("response" in message)) {
@@ -193,6 +193,7 @@ async function sendStartThreadMessage(pat: string, webhookUrl: string, ai: Ai) {
 					"lrapoport-cf",
 					"petebacondarwin",
 					"CarmenPopoviciu",
+					"andyjessop",
 				].includes(pr.user.login)
 		)
 		.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));

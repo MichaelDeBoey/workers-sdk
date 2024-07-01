@@ -87,7 +87,6 @@ export async function localPropsToConfigBundle(
 		compatibilityDate: props.compatibilityDate,
 		compatibilityFlags: props.compatibilityFlags,
 		inspectorPort: props.runtimeInspectorPort,
-		usageModel: props.usageModel,
 		bindings: props.bindings,
 		workerDefinitions: props.workerDefinitions,
 		assetPaths: props.assetPaths,
@@ -142,15 +141,6 @@ export function maybeRegisterLocalWorker(
 }
 
 export function Local(props: LocalProps) {
-	useLocalWorker(props);
-
-	return null;
-}
-
-function useLocalWorker(props: LocalProps) {
-	const miniflareServerRef = useRef<MiniflareServer>();
-	const removeMiniflareServerExitListenerRef = useRef<() => void>();
-
 	useEffect(() => {
 		if (props.bindings.services && props.bindings.services.length > 0) {
 			logger.warn(
@@ -170,6 +160,15 @@ function useLocalWorker(props: LocalProps) {
 			);
 		}
 	}, [props.bindings.durable_objects?.bindings]);
+
+	useLocalWorker(props);
+
+	return null;
+}
+
+function useLocalWorker(props: LocalProps) {
+	const miniflareServerRef = useRef<MiniflareServer>();
+	const removeMiniflareServerExitListenerRef = useRef<() => void>();
 
 	useEffect(() => {
 		const abortController = new AbortController();

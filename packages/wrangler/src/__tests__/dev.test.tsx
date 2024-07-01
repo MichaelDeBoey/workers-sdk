@@ -113,20 +113,15 @@ describe("wrangler dev", () => {
 			expect(std.out).toMatchInlineSnapshot(`""`);
 			expect(std.warn.replaceAll(currentDate, "<current-date>"))
 				.toMatchInlineSnapshot(`
-			        "[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNo compatibility_date was specified. Using the installed Workers runtime's latest supported date: <current-date>.[0m
+"[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNo compatibility_date was specified. Using the installed Workers runtime's latest supported date: <current-date>.[0m
 
-			          Add one to your wrangler.toml file:
-			          \`\`\`
-			          compatibility_date = \\"<current-date>\\"
-			          \`\`\`
-			          or pass it in your terminal:
-			          \`\`\`
-			          --compatibility-date=<current-date>
-			          \`\`\`
-			          See [4mhttps://developers.cloudflare.com/workers/platform/compatibility-dates/[0m for more information.
+  ❯❯ Add one to your wrangler.toml file: compatibility_date = \\"<current-date>\\", or
+  ❯❯ Pass it in your terminal: wrangler dev [<SCRIPT>] --compatibility-date=<current-date>
 
-			        "
-		      `);
+  See [4mhttps://developers.cloudflare.com/workers/platform/compatibility-dates/[0m for more information.
+
+"
+`);
 			expect(std.err).toMatchInlineSnapshot(`""`);
 		});
 
@@ -1196,17 +1191,17 @@ describe("wrangler dev", () => {
 			  "out": "
 			wrangler dev [script]
 
-			👂 Start a local server for developing your worker
+			Start a local server for developing a worker
 
 			Positionals:
 			  script  The path to an entry point for your worker  [string]
 
-			Flags:
-			  -j, --experimental-json-config  Experimental: Support wrangler.json  [boolean]
-			  -c, --config                    Path to .toml configuration file  [string]
-			  -e, --env                       Environment to use for operations and .env files  [string]
-			  -h, --help                      Show help  [boolean]
-			  -v, --version                   Show version number  [boolean]
+			Global Flags:
+			  -j, --experimental-json-config  ⚑Experimental: support wrangler.json  [boolean]
+			  -c, --config                    ⚑Path to .toml configuration file  [string]
+			  -e, --env                       ⚑Environment to use for operations and .env files  [string]
+			  -h, --help                      ⚑Show help  [boolean]
+			  -v, --version                   ⚑Show version number  [boolean]
 
 			Options:
 			      --name                                       Name of the worker  [string]

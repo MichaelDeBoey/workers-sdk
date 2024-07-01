@@ -1,5 +1,86 @@
 # miniflare
 
+## 3.20240620.0
+
+### Patch Changes
+
+- [#6110](https://github.com/cloudflare/workers-sdk/pull/6110) [`7d02856`](https://github.com/cloudflare/workers-sdk/commit/7d02856ae2cbd90eb94324f9f6fcb44cd2c44059) Thanks [@CarmenPopoviciu](https://github.com/CarmenPopoviciu)! - chore: update dependencies of "miniflare" package
+
+  The following dependency versions have been updated:
+
+  | Dependency                | From          | To            |
+  | ------------------------- | ------------- | ------------- |
+  | workerd                   | 1.20240610.1  | 1.20240620.1  |
+  | @cloudflare/workers-types | ^4.20240605.0 | ^4.20240620.0 |
+
+## 3.20240610.1
+
+### Patch Changes
+
+- [#6050](https://github.com/cloudflare/workers-sdk/pull/6050) [`a0c3327`](https://github.com/cloudflare/workers-sdk/commit/a0c3327dd63059d3e24085a95f48f8a98605c49f) Thanks [@threepointone](https://github.com/threepointone)! - chore: Normalize more deps
+
+  This is the last of the patches that normalize dependencies across the codebase. In this batch: `ws`, `vitest`, `zod` , `rimraf`, `@types/rimraf`, `ava`, `source-map`, `glob`, `cookie`, `@types/cookie`, `@microsoft/api-extractor`, `@types/mime`, `@types/yargs`, `devtools-protocol`, `@vitest/ui`, `execa`, `strip-ansi`
+
+  This patch also sorts dependencies in every `package.json`
+
+- [#6029](https://github.com/cloudflare/workers-sdk/pull/6029) [`f5ad1d3`](https://github.com/cloudflare/workers-sdk/commit/f5ad1d3e562ce63b59f6ab136f1cdd703605bca4) Thanks [@threepointone](https://github.com/threepointone)! - chore: Normalize some dependencies in workers-sdk
+
+  This is the first of a few expected patches that normalize dependency versions, This normalizes `undici`, `concurrently`, `@types/node`, `react`, `react-dom`, `@types/react`, `@types/react-dom`, `eslint`, `typescript`. There are no functional code changes (but there are a couple of typecheck fixes).
+
+- [#6058](https://github.com/cloudflare/workers-sdk/pull/6058) [`31cd51f`](https://github.com/cloudflare/workers-sdk/commit/31cd51f251050b0d6db97857a8d1d5427c855d99) Thanks [@threepointone](https://github.com/threepointone)! - chore: Quieter builds
+
+  This patch cleans up warnings we were seeing when doing a full build. Specifically:
+
+  - fixtures/remix-pages-app had a bunch of warnings about impending features that it should be upgraded to, so I did that. (tbh this one needs a full upgrade of packages, but we'll get to that later when we're upgrading across the codebase)
+  - updated `@microsoft/api-extractor` so it didn't complain that it didn't match the `typescript` version (that we'd recently upgraded)
+  - it also silenced a bunch of warnings when exporting types from `wrangler`. We'll need to fix those, but we'll do that when we work on unstable_dev etc.
+  - workers-playground was complaining about the size of the bundle being generated, so I increased the limit on it
+
+## 3.20240610.0
+
+### Patch Changes
+
+- [#6024](https://github.com/cloudflare/workers-sdk/pull/6024) [`c4146fc`](https://github.com/cloudflare/workers-sdk/commit/c4146fc021cbb0556cc95899184b7a44d58ad77c) Thanks [@petebacondarwin](https://github.com/petebacondarwin)! - chore: update dependencies of "miniflare" package
+
+  The following dependency versions have been updated:
+
+  | Dependency | From         | To           |
+  | ---------- | ------------ | ------------ |
+  | workerd    | 1.20240605.0 | 1.20240610.1 |
+
+## 3.20240605.0
+
+### Patch Changes
+
+- [#5961](https://github.com/cloudflare/workers-sdk/pull/5961) [`ab95473`](https://github.com/cloudflare/workers-sdk/commit/ab9547380fd6fbc1d20c8dd4211faedbe94e5b33) Thanks [@CarmenPopoviciu](https://github.com/CarmenPopoviciu)! - chore: update dependencies of "miniflare" package
+
+  The following dependency versions have been updated:
+
+  | Dependency                | From          | To            |
+  | ------------------------- | ------------- | ------------- |
+  | workerd                   | 1.20240524.0  | 1.20240605.0  |
+  | @cloudflare/workers-types | ^4.20240524.0 | ^4.20240605.0 |
+
+## 3.20240524.2
+
+### Patch Changes
+
+- [#5922](https://github.com/cloudflare/workers-sdk/pull/5922) [`bdbb7f8`](https://github.com/cloudflare/workers-sdk/commit/bdbb7f890d3fa5b6fa7ac79a3bb650ece9417fb2) Thanks [@dario-piotrowicz](https://github.com/dario-piotrowicz)! - fix: Allow the magic proxy to handle functions returning functions
+
+  Previously functions returning functions would not be handled by the magic proxy,
+  the changes here enable the above, allowing for code such as the following:
+
+  ```js
+  	const mf = new Miniflare(/* ... */);
+
+  	const { functionsFactory } = await mf.getBindings<Env>();
+  	const fn = functionsFactory.getFunction();
+  	const functionResult = fn();
+  ```
+
+  This also works with the native workers RPC mechanism, allowing users to
+  return functions in their RPC code.
+
 ## 3.20240524.1
 
 ### Patch Changes

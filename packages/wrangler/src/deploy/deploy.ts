@@ -2,6 +2,7 @@ import assert from "node:assert";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { URLSearchParams } from "node:url";
+import { cancel } from "@cloudflare/cli";
 import { fetchListResult, fetchResult } from "../cfetch";
 import { printBindings } from "../config";
 import { bundleWorker } from "../deployment-bundle/bundle";
@@ -19,6 +20,7 @@ import {
 	createModuleCollector,
 	getWrangler1xLegacyModuleReferences,
 } from "../deployment-bundle/module-collection";
+import { validateNodeCompat } from "../deployment-bundle/node-compat";
 import { loadSourceMaps } from "../deployment-bundle/source-maps";
 import { addHyphens } from "../deployments";
 import { confirm } from "../dialogs";
@@ -44,6 +46,7 @@ import {
 } from "../sourcemap";
 import triggersDeploy from "../triggers/deploy";
 import { logVersionIdChange } from "../utils/deployment-id-version-id-change";
+import { confirmLatestDeploymentOverwrite } from "../versions/deploy";
 import { getZoneForRoute } from "../zones";
 import type { Config } from "../config";
 import type {
@@ -75,6 +78,7 @@ type Props = {
 	assetPaths: AssetPaths | undefined;
 	vars: Record<string, string> | undefined;
 	defines: Record<string, string> | undefined;
+	alias: Record<string, string> | undefined;
 	triggers: string[] | undefined;
 	routes: string[] | undefined;
 	legacyEnv: boolean | undefined;
@@ -377,31 +381,18 @@ See https://developers.cloudflare.com/workers/platform/compatibility-dates for m
 
 	const minify = props.minify ?? config.minify;
 
-	const legacyNodeCompat = props.nodeCompat ?? config.node_compat;
-	if (legacyNodeCompat) {
-		logger.warn(
-			"Enabling Node.js compatibility mode for built-ins and globals. This is experimental and has serious tradeoffs. Please see https://github.com/ionic-team/rollup-plugin-node-polyfills/ for more details."
-		);
-	}
-
+	const nodejsCompatMode = validateNodeCompat({
+		legacyNodeCompat: props.nodeCompat ?? config.node_compat ?? false,
+		compatibilityFlags: props.compatibilityFlags ?? config.compatibility_flags,
+		noBundle: props.noBundle ?? config.no_bundle ?? false,
+	});
 	const compatibilityFlags =
 		props.compatibilityFlags ?? config.compatibility_flags;
-	const nodejsCompat = compatibilityFlags.includes("nodejs_compat");
-	assert(
-		!(legacyNodeCompat && nodejsCompat),
-		"The `nodejs_compat` compatibility flag cannot be used in conjunction with the legacy `--node-compat` flag. If you want to use the Workers runtime Node.js compatibility features, please remove the `--node-compat` argument from your CLI command or `node_compat = true` from your config file."
-	);
 
-	// Warn if user tries minify or node-compat with no-bundle
+	// Warn if user tries minify with no-bundle
 	if (props.noBundle && minify) {
 		logger.warn(
 			"`--minify` and `--no-bundle` can't be used together. If you want to minify your Worker and disable Wrangler's bundling, please minify as part of your own bundling process."
-		);
-	}
-
-	if (props.noBundle && legacyNodeCompat) {
-		logger.warn(
-			"`--node-compat` and `--no-bundle` can't be used together. If you want to polyfill Node.js built-ins and disable Wrangler's bundling, please polyfill as part of your own bundling process."
 		);
 	}
 
@@ -433,7 +424,8 @@ See https://developers.cloudflare.com/workers/platform/compatibility-dates for m
 	const envName = props.env ?? "production";
 
 	const start = Date.now();
-	const notProd = Boolean(!props.legacyEnv && props.env);
+	const prod = Boolean(props.legacyEnv || !props.env);
+	const notProd = !prod;
 	const workerName = notProd ? `${scriptName} (${envName})` : scriptName;
 	const workerUrl = props.dispatchNamespace
 		? `/accounts/${accountId}/workers/dispatch/namespaces/${props.dispatchNamespace}/scripts/${scriptName}`
@@ -444,6 +436,14 @@ See https://developers.cloudflare.com/workers/platform/compatibility-dates for m
 	let deploymentId: string | null = null;
 
 	const { format } = props.entry;
+
+	if (!props.dispatchNamespace && prod && accountId && scriptName) {
+		const yes = await confirmLatestDeploymentOverwrite(accountId, scriptName);
+		if (!yes) {
+			cancel("Aborting deploy...");
+			return;
+		}
+	}
 
 	if (
 		!props.isWorkersSite &&
@@ -472,6 +472,7 @@ See https://developers.cloudflare.com/workers/platform/compatibility-dates for m
 			"You cannot configure [data_blobs] with an ES module worker. Instead, import the file directly in your code, and optionally configure `[rules]` in your wrangler.toml"
 		);
 	}
+
 	try {
 		if (props.noBundle) {
 			// if we're not building, let's just copy the entry to the destination directory
@@ -523,10 +524,10 @@ See https://developers.cloudflare.com/workers/platform/compatibility-dates for m
 						tsconfig: props.tsconfig ?? config.tsconfig,
 						minify,
 						sourcemap: uploadSourceMaps,
-						legacyNodeCompat,
-						nodejsCompat,
+						nodejsCompatMode,
 						define: { ...config.define, ...props.defines },
 						checkFetch: false,
+						alias: config.alias,
 						assets: config.assets,
 						// enable the cache when publishing
 						bypassAssetCache: false,
@@ -667,7 +668,6 @@ See https://developers.cloudflare.com/workers/platform/compatibility-dates for m
 				: undefined,
 			compatibility_date: props.compatibilityDate ?? config.compatibility_date,
 			compatibility_flags: compatibilityFlags,
-			usage_model: config.usage_model,
 			keepVars,
 			keepSecrets: keepVars, // keepVars implies keepSecrets
 			logpush: props.logpush !== undefined ? props.logpush : config.logpush,
@@ -1125,7 +1125,7 @@ export async function updateQueueConsumers(
 	return updateConsumers;
 }
 
-async function noBundleWorker(
+export async function noBundleWorker(
 	entry: Entry,
 	rules: Rule[],
 	outDir: string | undefined

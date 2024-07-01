@@ -2,6 +2,7 @@ import fs from "node:fs";
 import dotenv from "dotenv";
 import { findUpSync } from "find-up";
 import { FatalError, UserError } from "../errors";
+import { getFlag } from "../experimental-flags";
 import { logger } from "../logger";
 import { EXIT_CODE_INVALID_PAGES_CONFIG } from "../pages/errors";
 import { parseJSONC, parseTOML, readFileSync } from "../parse";
@@ -10,6 +11,7 @@ import { validatePagesConfig } from "./validation-pages";
 import type { CfWorkerInit } from "../deployment-bundle/worker";
 import type { CommonYargsOptions } from "../yargs-types";
 import type { Config, OnlyCamelCase, RawConfig } from "./config";
+import type { NormalizeAndValidateConfigArgs } from "./validation";
 
 export type {
 	Config,
@@ -24,35 +26,39 @@ export type {
 	ConfigModuleRuleType,
 } from "./environment";
 
-type ReadConfigCommandArgs<CommandArgs> = CommandArgs &
-	Pick<OnlyCamelCase<CommonYargsOptions>, "experimentalJsonConfig"> &
-	Partial<Pick<OnlyCamelCase<CommonYargsOptions>, "env">>;
+type ReadConfigCommandArgs = NormalizeAndValidateConfigArgs & {
+	experimentalJsonConfig?: boolean | undefined;
+};
 
 /**
  * Get the Wrangler configuration; read it from the give `configPath` if available.
  */
-export function readConfig<CommandArgs>(
+export function readConfig(
 	configPath: string | undefined,
 	// Include command specific args as well as the wrangler global flags
-	args: ReadConfigCommandArgs<CommandArgs>,
+	args: ReadConfigCommandArgs,
 	requirePagesConfig: true
 ): Omit<Config, "pages_build_output_dir"> & { pages_build_output_dir: string };
-export function readConfig<CommandArgs>(
+export function readConfig(
 	configPath: string | undefined,
 	// Include command specific args as well as the wrangler global flags
-	args: ReadConfigCommandArgs<CommandArgs>,
-	requirePagesConfig?: boolean
+	args: ReadConfigCommandArgs,
+	requirePagesConfig?: boolean,
+	hideWarnings?: boolean
 ): Config;
-export function readConfig<CommandArgs>(
+export function readConfig(
 	configPath: string | undefined,
 	// Include command specific args as well as the wrangler global flags
-	args: ReadConfigCommandArgs<CommandArgs>,
-	requirePagesConfig?: boolean
+	args: ReadConfigCommandArgs,
+	requirePagesConfig?: boolean,
+	hideWarnings: boolean = false
 ): Config {
+	const isJsonConfigEnabled =
+		getFlag("JSON_CONFIG_FILE") ?? args.experimentalJsonConfig;
 	let rawConfig: RawConfig = {};
 
 	if (!configPath) {
-		configPath = findWranglerToml(process.cwd(), args.experimentalJsonConfig);
+		configPath = findWranglerToml(process.cwd(), isJsonConfigEnabled);
 	}
 
 	try {
@@ -95,7 +101,7 @@ export function readConfig<CommandArgs>(
 	}
 	if (
 		isPagesConfigFile &&
-		(configPath?.endsWith("json") || args.experimentalJsonConfig)
+		(configPath?.endsWith("json") || isJsonConfigEnabled)
 	) {
 		throw new UserError(
 			`Pages doesn't currently support JSON formatted config \`${
@@ -112,7 +118,7 @@ export function readConfig<CommandArgs>(
 		args
 	);
 
-	if (diagnostics.hasWarnings()) {
+	if (diagnostics.hasWarnings() && !hideWarnings) {
 		logger.warn(diagnostics.renderWarnings());
 	}
 	if (diagnostics.hasErrors()) {
@@ -218,7 +224,7 @@ export function printBindings(bindings: CfWorkerInit["bindings"]) {
 			type: "Data Blobs",
 			entries: Object.entries(data_blobs).map(([key, value]) => ({
 				key,
-				value: truncate(value),
+				value: typeof value === "string" ? truncate(value) : "<Buffer>",
 			})),
 		});
 	}
@@ -476,7 +482,7 @@ export function printBindings(bindings: CfWorkerInit["bindings"]) {
 			type: "Wasm Modules",
 			entries: Object.entries(wasm_modules).map(([key, value]) => ({
 				key,
-				value: truncate(value),
+				value: typeof value === "string" ? truncate(value) : "<Wasm>",
 			})),
 		});
 	}
