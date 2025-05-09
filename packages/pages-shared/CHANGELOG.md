@@ -1,5 +1,27 @@
 # @cloudflare/pages-shared
 
+## 0.13.36
+
+### Patch Changes
+
+- Updated dependencies [[`df5d1f6`](https://github.com/cloudflare/workers-sdk/commit/df5d1f6104df90e5b991c8d73d9847a64beb9cd2), [`4672bda`](https://github.com/cloudflare/workers-sdk/commit/4672bda9fe0d94a5eaea231fc46ca755092a81eb), [`c6b3f10`](https://github.com/cloudflare/workers-sdk/commit/c6b3f10f5adf4e6d62bcc9fe89574a2cbcce3870)]:
+  - miniflare@4.20250507.0
+
+## 0.13.35
+
+### Patch Changes
+
+- Updated dependencies [[`357d42a`](https://github.com/cloudflare/workers-sdk/commit/357d42acfb16d21169d004961030cd4822526a96)]:
+  - miniflare@4.20250428.1
+
+## 0.13.34
+
+### Patch Changes
+
+- Updated dependencies [[`1be5644`](https://github.com/cloudflare/workers-sdk/commit/1be56441dec5e8faea3b6c007c1a347bab1a4029), [`d2ecc76`](https://github.com/cloudflare/workers-sdk/commit/d2ecc763e4d77620d6a9be71855e87893631ebc0), [`137d2da`](https://github.com/cloudflare/workers-sdk/commit/137d2da0602db0f66a5c1b6f277624f6031d9dc5)]:
+  - @cloudflare/workers-shared@0.17.5
+  - miniflare@4.20250428.0
+
 ## 0.13.33
 
 ### Patch Changes

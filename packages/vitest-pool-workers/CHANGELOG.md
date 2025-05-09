@@ -1,5 +1,43 @@
 # @cloudflare/vitest-pool-workers
 
+## 0.8.27
+
+### Patch Changes
+
+- Updated dependencies [[`d0d62e6`](https://github.com/cloudflare/workers-sdk/commit/d0d62e6e4bb3ac6e0b6d9a0140a2825249f32e89)]:
+  - wrangler@4.14.4
+
+## 0.8.26
+
+### Patch Changes
+
+- Updated dependencies [[`df5d1f6`](https://github.com/cloudflare/workers-sdk/commit/df5d1f6104df90e5b991c8d73d9847a64beb9cd2), [`4672bda`](https://github.com/cloudflare/workers-sdk/commit/4672bda9fe0d94a5eaea231fc46ca755092a81eb), [`826c5e8`](https://github.com/cloudflare/workers-sdk/commit/826c5e8df4e5574483ac52f321dba3d6879c8cb8), [`c6b3f10`](https://github.com/cloudflare/workers-sdk/commit/c6b3f10f5adf4e6d62bcc9fe89574a2cbcce3870), [`078c568`](https://github.com/cloudflare/workers-sdk/commit/078c568c2b5746e3c03bc9e1cd5cb7027023107a), [`8c3cdc3`](https://github.com/cloudflare/workers-sdk/commit/8c3cdc34e634bf3dc7ed7aa199ea05d668aed7f6)]:
+  - miniflare@4.20250507.0
+  - wrangler@4.14.3
+
+## 0.8.25
+
+### Patch Changes
+
+- Updated dependencies [[`1cd30a5`](https://github.com/cloudflare/workers-sdk/commit/1cd30a554f00dfd7bff43bbd3e601bc67f7acb2b), [`11aa362`](https://github.com/cloudflare/workers-sdk/commit/11aa36255013780bbc8cd45a758a3658f8b0cc9f), [`2be85d7`](https://github.com/cloudflare/workers-sdk/commit/2be85d77dd5eff024568bf6ce2358a1dae74ae2a), [`3fe85d4`](https://github.com/cloudflare/workers-sdk/commit/3fe85d4882a1f4f4a9438f4d6618399236ee9e26)]:
+  - wrangler@4.14.2
+
+## 0.8.24
+
+### Patch Changes
+
+- Updated dependencies [[`cdc88d8`](https://github.com/cloudflare/workers-sdk/commit/cdc88d8fc5ee30d2b3f35b6e548334d5dc68aea1), [`357d42a`](https://github.com/cloudflare/workers-sdk/commit/357d42acfb16d21169d004961030cd4822526a96), [`508a1a3`](https://github.com/cloudflare/workers-sdk/commit/508a1a31a039a5f4700efbc7535a165d79b22cb9), [`82e220e`](https://github.com/cloudflare/workers-sdk/commit/82e220e943521d9f2cbaa63cdb56792da6cb1c60)]:
+  - wrangler@4.14.1
+  - miniflare@4.20250428.1
+
+## 0.8.23
+
+### Patch Changes
+
+- Updated dependencies [[`d2ecc76`](https://github.com/cloudflare/workers-sdk/commit/d2ecc763e4d77620d6a9be71855e87893631ebc0), [`9bf55aa`](https://github.com/cloudflare/workers-sdk/commit/9bf55aa60aa69ea9bf2b59138504d1772d84c14d), [`0b4d22a`](https://github.com/cloudflare/workers-sdk/commit/0b4d22a864d7781c87ccead79888b39fd7304575), [`3b60131`](https://github.com/cloudflare/workers-sdk/commit/3b60131ca5a1bafcf7af16b0f41f2601a9a3ee85), [`137d2da`](https://github.com/cloudflare/workers-sdk/commit/137d2da0602db0f66a5c1b6f277624f6031d9dc5)]:
+  - miniflare@4.20250428.0
+  - wrangler@4.14.0
+
 ## 0.8.22
 
 ### Patch Changes

@@ -1,5 +1,52 @@
 # miniflare
 
+## 4.20250507.0
+
+### Patch Changes
+
+- [#9092](https://github.com/cloudflare/workers-sdk/pull/9092) [`df5d1f6`](https://github.com/cloudflare/workers-sdk/commit/df5d1f6104df90e5b991c8d73d9847a64beb9cd2) Thanks [@dependabot](https://github.com/apps/dependabot)! - chore: update dependencies of "miniflare" package
+
+  The following dependency versions have been updated:
+
+  | Dependency                | From          | To            |
+  | ------------------------- | ------------- | ------------- |
+  | workerd                   | 1.20250428.0  | 1.20250506.0  |
+  | @cloudflare/workers-types | ^4.20250428.0 | ^4.20250506.0 |
+
+- [#9160](https://github.com/cloudflare/workers-sdk/pull/9160) [`4672bda`](https://github.com/cloudflare/workers-sdk/commit/4672bda9fe0d94a5eaea231fc46ca755092a81eb) Thanks [@dependabot](https://github.com/apps/dependabot)! - chore: update dependencies of "miniflare" package
+
+  The following dependency versions have been updated:
+
+  | Dependency                | From          | To            |
+  | ------------------------- | ------------- | ------------- |
+  | workerd                   | 1.20250506.0  | 1.20250507.0  |
+  | @cloudflare/workers-types | ^4.20250506.0 | ^4.20250507.0 |
+
+- [#9159](https://github.com/cloudflare/workers-sdk/pull/9159) [`c6b3f10`](https://github.com/cloudflare/workers-sdk/commit/c6b3f10f5adf4e6d62bcc9fe89574a2cbcce3870) Thanks [@petebacondarwin](https://github.com/petebacondarwin)! - bump esbuild version to fix regression in 0.25.0
+
+## 4.20250428.1
+
+### Patch Changes
+
+- [#9089](https://github.com/cloudflare/workers-sdk/pull/9089) [`357d42a`](https://github.com/cloudflare/workers-sdk/commit/357d42acfb16d21169d004961030cd4822526a96) Thanks [@edmundhung](https://github.com/edmundhung)! - fix: skip comment lines when parsing `NODE_EXTRA_CA_CERTS`
+
+## 4.20250428.0
+
+### Minor Changes
+
+- [#9083](https://github.com/cloudflare/workers-sdk/pull/9083) [`137d2da`](https://github.com/cloudflare/workers-sdk/commit/137d2da0602db0f66a5c1b6f277624f6031d9dc5) Thanks [@penalosa](https://github.com/penalosa)! - Support Tail Workers in local dev
+
+### Patch Changes
+
+- [#9081](https://github.com/cloudflare/workers-sdk/pull/9081) [`d2ecc76`](https://github.com/cloudflare/workers-sdk/commit/d2ecc763e4d77620d6a9be71855e87893631ebc0) Thanks [@dependabot](https://github.com/apps/dependabot)! - chore: update dependencies of "miniflare" package
+
+  The following dependency versions have been updated:
+
+  | Dependency                | From          | To            |
+  | ------------------------- | ------------- | ------------- |
+  | workerd                   | 1.20250424.0  | 1.20250428.0  |
+  | @cloudflare/workers-types | ^4.20250424.0 | ^4.20250428.0 |
+
 ## 4.20250424.1
 
 ### Patch Changes

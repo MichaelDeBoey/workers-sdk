@@ -1,5 +1,38 @@
 # @cloudflare/vite-plugin
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`df5d1f6`](https://github.com/cloudflare/workers-sdk/commit/df5d1f6104df90e5b991c8d73d9847a64beb9cd2), [`4672bda`](https://github.com/cloudflare/workers-sdk/commit/4672bda9fe0d94a5eaea231fc46ca755092a81eb), [`826c5e8`](https://github.com/cloudflare/workers-sdk/commit/826c5e8df4e5574483ac52f321dba3d6879c8cb8), [`c6b3f10`](https://github.com/cloudflare/workers-sdk/commit/c6b3f10f5adf4e6d62bcc9fe89574a2cbcce3870), [`078c568`](https://github.com/cloudflare/workers-sdk/commit/078c568c2b5746e3c03bc9e1cd5cb7027023107a), [`8c3cdc3`](https://github.com/cloudflare/workers-sdk/commit/8c3cdc34e634bf3dc7ed7aa199ea05d668aed7f6)]:
+  - miniflare@4.20250507.0
+  - wrangler@4.14.3
+  - @cloudflare/unenv-preset@2.3.1
+
+## 1.1.0
+
+### Minor Changes
+
+- [#9108](https://github.com/cloudflare/workers-sdk/pull/9108) [`bb41346`](https://github.com/cloudflare/workers-sdk/commit/bb413469f556423bf70cd3f422a1116f9522ba06) Thanks [@jamesopstad](https://github.com/jamesopstad)! - Add support for running Vite in middleware mode. This enables using Storybook with the Vite plugin, which would previously crash. WebSocket connections to Workers are not supported when in middleware mode.
+
+### Patch Changes
+
+- [#9115](https://github.com/cloudflare/workers-sdk/pull/9115) [`f901e14`](https://github.com/cloudflare/workers-sdk/commit/f901e14e842b57c90729d6f5c2b308f60323aaba) Thanks [@penalosa](https://github.com/penalosa)! - Don't crash on non-existent tail consumers when running `vite dev`
+
+- Updated dependencies [[`cdc88d8`](https://github.com/cloudflare/workers-sdk/commit/cdc88d8fc5ee30d2b3f35b6e548334d5dc68aea1), [`357d42a`](https://github.com/cloudflare/workers-sdk/commit/357d42acfb16d21169d004961030cd4822526a96), [`508a1a3`](https://github.com/cloudflare/workers-sdk/commit/508a1a31a039a5f4700efbc7535a165d79b22cb9), [`82e220e`](https://github.com/cloudflare/workers-sdk/commit/82e220e943521d9f2cbaa63cdb56792da6cb1c60)]:
+  - wrangler@4.14.1
+  - miniflare@4.20250428.1
+  - @cloudflare/unenv-preset@2.3.1
+
+## 1.0.13
+
+### Patch Changes
+
+- Updated dependencies [[`d2ecc76`](https://github.com/cloudflare/workers-sdk/commit/d2ecc763e4d77620d6a9be71855e87893631ebc0), [`9bf55aa`](https://github.com/cloudflare/workers-sdk/commit/9bf55aa60aa69ea9bf2b59138504d1772d84c14d), [`0b4d22a`](https://github.com/cloudflare/workers-sdk/commit/0b4d22a864d7781c87ccead79888b39fd7304575), [`3b60131`](https://github.com/cloudflare/workers-sdk/commit/3b60131ca5a1bafcf7af16b0f41f2601a9a3ee85), [`137d2da`](https://github.com/cloudflare/workers-sdk/commit/137d2da0602db0f66a5c1b6f277624f6031d9dc5)]:
+  - miniflare@4.20250428.0
+  - wrangler@4.14.0
+  - @cloudflare/unenv-preset@2.3.1
+
 ## 1.0.12
 
 ### Patch Changes
