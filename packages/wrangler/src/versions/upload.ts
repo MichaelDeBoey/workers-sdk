@@ -254,6 +254,7 @@ export const versionsUploadCommand = createCommand({
 		overrideExperimentalFlags: (args) => ({
 			MULTIWORKER: false,
 			RESOURCES_PROVISION: args.experimentalProvision ?? false,
+			MIXED_MODE: false,
 		}),
 	},
 	handler: async function versionsUploadHandler(args, { config }) {
@@ -591,6 +592,7 @@ See https://developers.cloudflare.com/workers/platform/compatibility-dates for m
 						// These options are dev-only
 						testScheduled: undefined,
 						watch: undefined,
+						metafile: undefined,
 					}
 				);
 

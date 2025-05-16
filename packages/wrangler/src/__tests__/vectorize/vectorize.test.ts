@@ -300,13 +300,9 @@ describe("vectorize commands", () => {
 
 		await expect(
 			runWrangler("vectorize create test-index --dimensions=1536")
-		).resolves.toBeUndefined();
-
-		expect(std.err).toMatchInlineSnapshot(`
-				"[31mX [41;31m[[41;97mERROR[41;31m][0m [1mYou must provide both dimensions and a metric, or a known model preset when creating an index.[0m
-
-"
-			`);
+		).rejects.toThrowErrorMatchingInlineSnapshot(
+			`[Error: 🚨 You must provide both dimensions and a metric, or a known model preset when creating an index.]`
+		);
 	});
 
 	it("should handle listing vectorize V1 indexes", async () => {
@@ -314,13 +310,13 @@ describe("vectorize commands", () => {
 		await runWrangler("vectorize list --deprecated-v1=true");
 		expect(std.out).toMatchInlineSnapshot(`
 			"📋 Listing Vectorize indexes...
-			┌───────────────┬────────────┬───────────┬─────────────┬────────────────────────────┬────────────────────────────┐
-			│ name          │ dimensions │ metric    │ description │ created                    │ modified                   │
-			├───────────────┼────────────┼───────────┼─────────────┼────────────────────────────┼────────────────────────────┤
-			│ test-index    │ 768        │ cosine    │             │ 2023-09-25T13:02:18.00268Z │ 2023-09-25T13:02:18.00268Z │
-			├───────────────┼────────────┼───────────┼─────────────┼────────────────────────────┼────────────────────────────┤
-			│ another-index │ 3          │ euclidean │             │ 2023-09-25T13:02:18.00268Z │ 2023-09-25T13:02:18.00268Z │
-			└───────────────┴────────────┴───────────┴─────────────┴────────────────────────────┴────────────────────────────┘"
+			┌─┬─┬─┬─┬─┬─┐
+			│ name │ dimensions │ metric │ description │ created │ modified │
+			├─┼─┼─┼─┼─┼─┤
+			│ test-index │ 768 │ cosine │ │ 2023-09-25T13:02:18.00268Z │ 2023-09-25T13:02:18.00268Z │
+			├─┼─┼─┼─┼─┼─┤
+			│ another-index │ 3 │ euclidean │ │ 2023-09-25T13:02:18.00268Z │ 2023-09-25T13:02:18.00268Z │
+			└─┴─┴─┴─┴─┴─┘"
 		`);
 	});
 
@@ -329,13 +325,13 @@ describe("vectorize commands", () => {
 		await runWrangler("vectorize list");
 		expect(std.out).toMatchInlineSnapshot(`
 			"📋 Listing Vectorize indexes...
-			┌───────────────┬────────────┬─────────────┬──────────────┬────────────────────────────┬────────────────────────────┐
-			│ name          │ dimensions │ metric      │ description  │ created                    │ modified                   │
-			├───────────────┼────────────┼─────────────┼──────────────┼────────────────────────────┼────────────────────────────┤
-			│ test-index    │ 1536       │ euclidean   │ test-desc    │ 2024-07-11T13:02:18.00268Z │ 2024-07-11T13:02:18.00268Z │
-			├───────────────┼────────────┼─────────────┼──────────────┼────────────────────────────┼────────────────────────────┤
-			│ another-index │ 32         │ dot-product │ another-desc │ 2024-07-11T13:02:18.00268Z │ 2024-07-11T13:02:18.00268Z │
-			└───────────────┴────────────┴─────────────┴──────────────┴────────────────────────────┴────────────────────────────┘"
+			┌─┬─┬─┬─┬─┬─┐
+			│ name │ dimensions │ metric │ description │ created │ modified │
+			├─┼─┼─┼─┼─┼─┤
+			│ test-index │ 1536 │ euclidean │ test-desc │ 2024-07-11T13:02:18.00268Z │ 2024-07-11T13:02:18.00268Z │
+			├─┼─┼─┼─┼─┼─┤
+			│ another-index │ 32 │ dot-product │ another-desc │ 2024-07-11T13:02:18.00268Z │ 2024-07-11T13:02:18.00268Z │
+			└─┴─┴─┴─┴─┴─┘"
 		`);
 	});
 
@@ -363,11 +359,11 @@ describe("vectorize commands", () => {
 		mockVectorizeRequest();
 		await runWrangler("vectorize get test-index --deprecated-v1=true");
 		expect(std.out).toMatchInlineSnapshot(`
-			"┌────────────┬────────────┬────────┬─────────────┬────────────────────────────┬────────────────────────────┐
-			│ name       │ dimensions │ metric │ description │ created                    │ modified                   │
-			├────────────┼────────────┼────────┼─────────────┼────────────────────────────┼────────────────────────────┤
-			│ test-index │ 768        │ cosine │             │ 2023-09-25T13:02:18.00268Z │ 2023-09-25T13:02:18.00268Z │
-			└────────────┴────────────┴────────┴─────────────┴────────────────────────────┴────────────────────────────┘"
+			"┌─┬─┬─┬─┬─┬─┐
+			│ name │ dimensions │ metric │ description │ created │ modified │
+			├─┼─┼─┼─┼─┼─┤
+			│ test-index │ 768 │ cosine │ │ 2023-09-25T13:02:18.00268Z │ 2023-09-25T13:02:18.00268Z │
+			└─┴─┴─┴─┴─┴─┘"
 		`);
 	});
 
@@ -375,11 +371,11 @@ describe("vectorize commands", () => {
 		mockVectorizeV2Request();
 		await runWrangler("vectorize get test-index");
 		expect(std.out).toMatchInlineSnapshot(`
-			"┌────────────┬────────────┬───────────┬─────────────┬────────────────────────────┬────────────────────────────┐
-			│ name       │ dimensions │ metric    │ description │ created                    │ modified                   │
-			├────────────┼────────────┼───────────┼─────────────┼────────────────────────────┼────────────────────────────┤
-			│ test-index │ 1536       │ euclidean │ test-desc   │ 2024-07-11T13:02:18.00268Z │ 2024-07-11T13:02:18.00268Z │
-			└────────────┴────────────┴───────────┴─────────────┴────────────────────────────┴────────────────────────────┘"
+			"┌─┬─┬─┬─┬─┬─┐
+			│ name │ dimensions │ metric │ description │ created │ modified │
+			├─┼─┼─┼─┼─┼─┤
+			│ test-index │ 1536 │ euclidean │ test-desc │ 2024-07-11T13:02:18.00268Z │ 2024-07-11T13:02:18.00268Z │
+			└─┴─┴─┴─┴─┴─┘"
 		`);
 	});
 
@@ -462,13 +458,12 @@ describe("vectorize commands", () => {
 
 	it("should log error when getByIds does not receive ids", async () => {
 		mockVectorizeV2Request();
-		await runWrangler("vectorize get-vectors test-index --ids");
 
-		expect(std.err).toMatchInlineSnapshot(`
-			"[31mX [41;31m[[41;97mERROR[41;31m][0m [1m🚨 Please provide valid vector identifiers.[0m
-
-"
-		`);
+		await expect(
+			runWrangler("vectorize get-vectors test-index --ids")
+		).rejects.toThrowErrorMatchingInlineSnapshot(
+			`[Error: 🚨 Please provide valid vector identifiers.]`
+		);
 	});
 
 	it("should handle a deleteByIds on a vectorize index", async () => {
@@ -482,13 +477,12 @@ describe("vectorize commands", () => {
 
 	it("should log error when deleteByIds does not receive ids", async () => {
 		mockVectorizeV2Request();
-		await runWrangler("vectorize delete-vectors test-index --ids");
 
-		expect(std.err).toMatchInlineSnapshot(`
-			"[31mX [41;31m[[41;97mERROR[41;31m][0m [1m🚨 Please provide valid vector identifiers for deletion.[0m
-
-"
-		`);
+		await expect(
+			runWrangler("vectorize delete-vectors test-index --ids")
+		).rejects.toThrowErrorMatchingInlineSnapshot(
+			`[Error: 🚨 Please provide valid vector identifiers for deletion.]`
+		);
 	});
 
 	it("should handle a query on a vectorize index", async () => {
@@ -551,30 +545,22 @@ describe("vectorize commands", () => {
 
 	it("should fail query when neither vector nor vector-id is provided", async () => {
 		mockVectorizeV2RequestError();
-		await runWrangler(
-			"vectorize query test-index --top-k=2 --return-values=true"
+		await expect(
+			runWrangler("vectorize query test-index --top-k=2 --return-values=true")
+		).rejects.toThrowErrorMatchingInlineSnapshot(
+			`[Error: 🚨 Either vector or vector-id parameter must be provided, but not both.]`
 		);
-		expect(std.out).toMatchInlineSnapshot(`""`);
-
-		expect(std.err).toMatchInlineSnapshot(`
-			"[31mX [41;31m[[41;97mERROR[41;31m][0m [1m🚨 Either vector or vector-id parameter must be provided, but not both.[0m
-
-"
-		`);
 	});
 
 	it("should fail query when both vector and vector-id are provided", async () => {
 		mockVectorizeV2RequestError();
-		await runWrangler(
-			"vectorize query test-index --vector 1 2 3 '4' --vector-id some-vector-id"
+		await expect(
+			runWrangler(
+				"vectorize query test-index --vector 1 2 3 '4' --vector-id some-vector-id"
+			)
+		).rejects.toThrowErrorMatchingInlineSnapshot(
+			`[Error: 🚨 Either vector or vector-id parameter must be provided, but not both.]`
 		);
-		expect(std.out).toMatchInlineSnapshot(`""`);
-
-		expect(std.err).toMatchInlineSnapshot(`
-			"[31mX [41;31m[[41;97mERROR[41;31m][0m [1m🚨 Either vector or vector-id parameter must be provided, but not both.[0m
-
-"
-		`);
 	});
 
 	it("should fail query with invalid return-metadata flag", async () => {
@@ -603,11 +589,11 @@ describe("vectorize commands", () => {
 		await runWrangler("vectorize info test-index");
 		expect(std.out).toMatchInlineSnapshot(`
 			"📋 Fetching index info...
-┌────────────┬─────────────┬──────────────────────────────────────┬──────────────────────────┐
-│ dimensions │ vectorCount │ processedUpToMutation                │ processedUpToDatetime    │
-├────────────┼─────────────┼──────────────────────────────────────┼──────────────────────────┤
-│ 1024       │ 1000        │ 7f11d6e5-d126-4f76-936e-fbfec079e0be │ 2024-07-19T13:11:44.064Z │
-└────────────┴─────────────┴──────────────────────────────────────┴──────────────────────────┘"
+			┌─┬─┬─┬─┐
+			│ dimensions │ vectorCount │ processedUpToMutation │ processedUpToDatetime │
+			├─┼─┼─┼─┤
+			│ 1024 │ 1000 │ 7f11d6e5-d126-4f76-936e-fbfec079e0be │ 2024-07-19T13:11:44.064Z │
+			└─┴─┴─┴─┘"
 		`);
 	});
 
@@ -645,15 +631,15 @@ describe("vectorize commands", () => {
 		await runWrangler(`vectorize list-metadata-index test-index`);
 		expect(std.out).toMatchInlineSnapshot(`
 			"📋 Fetching metadata indexes...
-┌──────────────┬─────────┐
-│ propertyName │ type    │
-├──────────────┼─────────┤
-│ string-prop  │ string  │
-├──────────────┼─────────┤
-│ num-prop     │ number  │
-├──────────────┼─────────┤
-│ bool-prop    │ boolean │
-└──────────────┴─────────┘"
+			┌─┬─┐
+			│ propertyName │ type │
+			├─┼─┤
+			│ string-prop │ string │
+			├─┼─┤
+			│ num-prop │ number │
+			├─┼─┤
+			│ bool-prop │ boolean │
+			└─┴─┘"
 		`);
 	});
 

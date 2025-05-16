@@ -30,7 +30,7 @@ import { getZoneIdForPreview } from "../../zones";
 import { Controller } from "./BaseController";
 import { castErrorCause } from "./events";
 import {
-	convertCfWorkerInitBindingstoBindings,
+	convertCfWorkerInitBindingsToBindings,
 	extractBindingsOfType,
 	unwrapHook,
 } from "./utils";
@@ -180,7 +180,7 @@ async function resolveBindings(
 	return {
 		bindings: {
 			...input.bindings,
-			...convertCfWorkerInitBindingstoBindings(bindings),
+			...convertCfWorkerInitBindingsToBindings(bindings),
 		},
 		unsafe: bindings.unsafe,
 	};
@@ -325,6 +325,16 @@ async function resolveConfig(
 	) {
 		throw new UserError(
 			"Browser Rendering is not supported locally. Please use `wrangler dev --remote` instead."
+		);
+	}
+
+	if (
+		extractBindingsOfType("analytics_engine", resolved.bindings).length &&
+		!resolved.dev.remote &&
+		resolved.build.format === "service-worker"
+	) {
+		logger.warn(
+			"Analytics Engine is not supported locally when using the service-worker format. Please migrate to the module worker format: https://developers.cloudflare.com/workers/reference/migrate-to-module-workers/"
 		);
 	}
 
