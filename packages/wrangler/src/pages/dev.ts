@@ -882,6 +882,7 @@ export const pagesDevCommand = createCommand({
 			{
 				MULTIWORKER: Array.isArray(args.config),
 				RESOURCES_PROVISION: false,
+				MIXED_MODE: false,
 			},
 			() =>
 				startDev({
@@ -947,6 +948,7 @@ export const pagesDevCommand = createCommand({
 					persistTo: args.persistTo,
 					logLevel: args.logLevel ?? "log",
 					experimentalProvision: undefined,
+					experimentalMixedMode: false,
 					experimentalVectorizeBindToProd: false,
 					experimentalImagesLocalMode: false,
 					enableIpc: true,
@@ -1267,6 +1269,8 @@ function getBindingsFromArgs(args: typeof pagesDevCommand.args): Partial<
 					return;
 				}
 
+				// The generated `bucket_name` might be invalid as per https://developers.cloudflare.com/r2/buckets/create-buckets/#bucket-level-operations
+				// However this name only applies to the dev environment and is not validated by miniflare.
 				return { binding, bucket_name: ref || binding.toString() };
 			})
 			.filter(Boolean) as EnvironmentNonInheritable["r2_buckets"];

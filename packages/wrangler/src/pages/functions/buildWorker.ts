@@ -35,6 +35,7 @@ export type Options = {
 	defineNavigatorUserAgent: boolean;
 	checkFetch: boolean;
 	external?: string[];
+	metafile?: string | boolean;
 };
 
 export function buildWorkerFromFunctions({
@@ -54,10 +55,12 @@ export function buildWorkerFromFunctions({
 	defineNavigatorUserAgent,
 	checkFetch,
 	external,
+	metafile,
 }: Options) {
 	const entry: Entry = {
 		file: resolve(getBasePath(), "templates/pages-template-worker.ts"),
 		projectRoot: functionsDirectory,
+		configPath: undefined,
 		format: "modules",
 		moduleRoot: functionsDirectory,
 		exports: [],
@@ -97,6 +100,7 @@ export function buildWorkerFromFunctions({
 		jsxFragment: undefined,
 		tsconfig: undefined,
 		testScheduled: undefined,
+		metafile,
 	});
 }
 
@@ -120,6 +124,7 @@ export type RawOptions = {
 	defineNavigatorUserAgent: boolean;
 	checkFetch: boolean;
 	external?: string[];
+	metafile?: string | boolean;
 };
 
 /**
@@ -148,10 +153,12 @@ export function buildRawWorker({
 	defineNavigatorUserAgent,
 	checkFetch,
 	external,
+	metafile,
 }: RawOptions) {
 	const entry: Entry = {
 		file: workerScriptPath,
 		projectRoot: resolve(directory),
+		configPath: undefined,
 		format: "modules",
 		moduleRoot: resolve(directory),
 		exports: [],
@@ -204,6 +211,7 @@ export function buildRawWorker({
 		local,
 		projectRoot: getPagesProjectRoot(),
 		defineNavigatorUserAgent,
+		metafile,
 
 		jsxFactory: undefined,
 		jsxFragment: undefined,
@@ -237,6 +245,7 @@ export async function produceWorkerBundleForWorkerJSDirectory({
 		{
 			file: entrypoint,
 			projectRoot: resolve(workerJSDirectory),
+			configPath: undefined,
 			format: "modules",
 			moduleRoot: resolve(workerJSDirectory),
 			exports: [],
